@@ -1,3 +1,4 @@
+import re 
 ###############################################################################
 # Hvaležni medved
 #
@@ -6,8 +7,8 @@
 # medved*.
 ###############################################################################
 
-test_text = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
-Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
+text = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
+Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. NaFenkrat
 prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
 tičal velik, debel trn. Žena se je prestrašila, a medved le milo in pohlevno
 godrnja. Zato se žena ojunači in mu izdere trn iz tace. Mrcina kosmata pa zvrne
@@ -22,19 +23,32 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 #
 # Namig: Pomagajte si z regex znakom za mejo [\b].
 #
-# >>> find_words(test_text, 'de')
+# >>> find_words(text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
+
+def find_words(besedilo, podniz):
+    #pomagajmo si z re.findall 
+    vzorec = r"\b\w*" + podniz + r"\w*\b" #pat = pattern
+    return set(re.findall(vzorec, besedilo))
 
 
 ###############################################################################
 # 2) Sestavite funkcijo [find_prefix], ki vrne množico vseh besed, ki se
 #    pojavijo v nizu in imajo dano predpono.
 #
-# >>> find_prefix(test_text, 'zi')
+# >>> find_prefix(test_text, 'zi') 
 # {'zibala', 'zibel', 'zibelko'}
 ###############################################################################
 
+def find_prefix(besedilo, podniz):
+    vzorec = podniz + r"\w*\b"
+    #za predpone in za pone, ja damo zadnji del in sprednji del vn, 
+    #če iščemo samo de, damo vse ven
+    return set(re.findall(vzorec, besedilo))
+
+#>>> find_prefix(text, 'zi')
+#{'zibelko', 'zibala', 'zila', 'zibel'}
 
 ###############################################################################
 # 3) Sestavite funkcijo [find_suffix], ki vrne množico vseh besed, ki se
@@ -44,6 +58,9 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 ###############################################################################
 
+def find_suffix(besedilo, podniz):
+    vzorec = r"\b\w*" + podniz
+    return set(re.findall(vzorec, besedilo))
 
 ###############################################################################
 # 4) Sestavite funkcijo [double_letters], ki sprejme niz in vrne množico vseh
@@ -52,3 +69,14 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> double_letters('A volunteer is worth twenty pressed men.')
 # {'volunteer', 'pressed'}
 ###############################################################################
+
+def double_letters(niz):
+    #vzorec = r"\b\w*(\w)\1\w*\b" #to zdej samo vzorec da ven. hočemo pa celo besedo. 
+    #zato damo: še ene oklepaje \b(...)\b, ampak uni oklepaj notr rata 2!
+    
+    vzorec = r"\b(\w*(\w)\2\w*)\b"
+    return set(j[0] for j in re.findall(vzorec, niz))
+
+#raje uporabljajmo poimenovane grupe in ne to d jih štejemo!!
+# (?P<n> ... )
+#kako jo kličemo??
