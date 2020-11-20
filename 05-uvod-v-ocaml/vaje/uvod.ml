@@ -175,7 +175,7 @@ let rec divide k list =
   | (k, list) when k <= 0 -> ([], list)
   | (k, x :: xs) ->
       let (list1, list2) = divide (k - 1) xs in 
-                                                (x :: list1, list2)
+  (x :: list1, list2)
 
     
                 
@@ -186,8 +186,26 @@ let rec divide k list =
  # rotate 2 [1; 2; 3; 4; 5];;
  - : int list = [3; 4; 5; 1; 2]
 [*----------------------------------------------------------------------------*)
+(* let rec reverse list =
+  let rec reverse_aux acc list =
+    match list with
+    | [] -> acc
+    | x :: xs -> reverse_aux (x::acc) xs
+  in
+  reverse_aux [] list
 
-let rec rotate n list = ()
+let rec rotate n list =
+  let rec rotate_aux acc n list =
+  match (n, list) with
+    |(0,_) -> acc
+    |(_, []) -> acc 
+    |(n,x::xs) -> rotate_aux (x::acc) (n-1) xs
+  in
+  rotate_aux [] n list |> reverse to vrne samo tisti del seznama, ki bo šel na konec *)
+
+  let rec rotate n list =
+  let (list1, list2) = divide n list in
+  list2 @ list1
 
 
 (*----------------------------------------------------------------------------*]
@@ -197,7 +215,10 @@ let rec rotate n list = ()
  - : int list = [2; 3; 2; 3]
 [*----------------------------------------------------------------------------*)
 
-let rec remove = ()
+let rec remove x  = function
+  |y::ys -> if y=x then remove x ys else y :: remove x ys
+  | [] -> []
+  
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_palindrome] za dani seznam ugotovi ali predstavlja palindrom.
@@ -208,8 +229,19 @@ let rec remove = ()
  # is_palindrome [0; 0; 1; 0];;
  - : bool = false
 [*----------------------------------------------------------------------------*)
+let rec reverse list =
+  let rec reverse_aux acc list =
+    match list with
+    | [] -> acc
+    | x :: xs -> reverse_aux (x::acc) xs
+  in
+  reverse_aux [] list
 
-let rec is_palindrome = ()
+let rec reverse' = function 
+|x::xs -> reverse' xs@[x]
+|[]->[]
+
+let is_palindrome list = list = reverse list
 
 (*----------------------------------------------------------------------------*]
  Funkcija [max_on_components] sprejme dva seznama in vrne nov seznam, katerega
@@ -220,7 +252,10 @@ let rec is_palindrome = ()
  - : int list = [5; 4; 3; 3; 4]
 [*----------------------------------------------------------------------------*)
 
-let rec max_on_components = ()
+let rec max_on_components list1 list2 = 
+  match (list1, list2) with 
+    |(_, []) | ([],_) -> []
+    |(x::xs, y::ys) -> if x>y then x:: max_on_components xs ys else y::max_on_components xs ys
 
 (*----------------------------------------------------------------------------*]
  Funkcija [second_largest] vrne drugo največjo vrednost v seznamu. Pri tem se
@@ -232,4 +267,21 @@ let rec max_on_components = ()
  - : int = 10
 [*----------------------------------------------------------------------------*)
 
-let rec second_largest = ()
+(* let rec first_largest  = function 
+  |[] -> failwith "List is empty."
+  | x:: xs -> 
+          let rec ali_je_naslednji_vecji acc x xs = 
+            match xs with
+            |y::ys -> if y > x then ali_je_naslednji_vecji y ys else ali_je_naslednji_vecji x ys
+          in
+          ali_je_naslednji_vecji 0 x xs *)
+
+let rec second_largest list = 
+  let rec largest = function
+    |[] -> failwith "List is too short."
+    |x::[] -> x
+    |x::xs -> max x (largest xs)
+  in 
+  largest( remove(largest list) list)
+  
+
